@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Gradient_Stuff
 {
-    class Strings
+    public class Strings
     {
         public static string AddWhitespace(string input, int totalSize, char Filler = ' ')
         {
@@ -18,5 +19,6 @@ namespace Gradient_Stuff
 
             return input + WS;
         }
+
     }
 }
