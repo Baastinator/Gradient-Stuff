@@ -6,27 +6,35 @@ namespace Gradient_Stuff
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
-            //var bmp = new Bitmap(@"C:\Users\admin\Desktop\DnD\Laradell\Maps\BitmapBS.bmp");
-            var NP = new NodeMap(10, 10);
+            NodeMap bruh = new NodeMap(4,4);
 
-
-            for (var y = 0; y < NP.Size.y; y++)
+            int i = 0;
+            for (int y = 0; y < 4; y++)
             {
-                for (var x = 0; x < NP.Size.x; x++)
+                for (int x = 0; x < 4; x++)
                 {
-                    var pxlCol = (x + y) / 10f;
-                    NP.Set(x, y, pxlCol, pxlCol);
+                    i++;
+                    bruh.Set(x, y, i);
+                }
+            }
+                
+            Console.WriteLine(bruh.Display);
+
+            for (int y = 0; y < 4; y++)
+            {
+                for (int x = 0; x < 4; x++)
+                {
+                    Console.WriteLine("{0} {1} \n{2}", x, y, bruh.UpscaleBetweenNodesBicubic(new Vectori(x, y), 1).Display);
                 }
             }
 
-
-
-            Console.WriteLine(NP.Display);
-
-            Console.WriteLine(NP.Upscale(2).Display);
-
+            bruh.UpscaleBetweenNodesBicubic(new Vectori(1,0), 1);
+            
+            
+            
+            
             //var scaledNP = NP.Upscale(4);
 
             //for (var i = 0; i < scaledNP.Size.x; i++)

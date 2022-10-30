@@ -28,21 +28,32 @@ namespace Display_BruhMoment
         
         private void button1_Click(object sender, EventArgs e) //First step
         {
-            var bmp = new Bitmap(@"C:\Users\admin\Desktop\Laradell\DEPRECIATED Maps\BitmapBS.bmp");
-            baseNP = new NodeMap(bmp.Width, bmp.Height);
-            baseNP = baseNP.Downscale(8).Upscale(7);
-            NP = new NodeMap(baseNP.Size);
-            for (var y = 0; y < NP.Size.y; y++)
+            const int size = 5;
+            NP = new NodeMap(size, size);
+            for (var y = 0; y < size; y++)
             {
-                for (var x = 0; x < NP.Size.x; x++)
+                for (var x = 0; x < size; x++)
                 {
-                    var pxlCol = 100;
-                    NP.Set(x, y, pxlCol, pxlCol);
+                    NP.Set(x, y, 255*(float)rng.NextDouble());
                 }
             }
-        }
 
-        private static int bruh = 4;
+            NP = NP.Upscale(50);
+
+            //var bmp = new Bitmap(@"C:\Users\admin\Desktop\Laradell\DEPRECIATED Maps\BitmapBS.bmp");
+            //baseNP = new NodeMap(bmp.Width, bmp.Height);
+            //NP = new NodeMap(baseNP.Size);
+            //for (var y = 0; y < NP.Size.y; y++)
+            //{
+            //    for (var x = 0; x < NP.Size.x; x++)
+            //    {
+            //        var pxlCol = bmp.GetPixel(x, y).R;
+            //        NP.Set(x, y, pxlCol, pxlCol);
+            //    }
+            //}
+
+            //NP = NP.Downscale(8).Upscale(6);
+        }
 
         private void button3_Click(object sender, EventArgs e) //Next Step
         {
@@ -55,19 +66,7 @@ namespace Display_BruhMoment
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            if (e is MouseEventArgs mouseEventArgs)
-            {
-                var X = mouseEventArgs.X;
-                var Y = mouseEventArgs.Y;
-                Console.WriteLine(@"X: {0}; Y: {1}", mouseEventArgs.X, mouseEventArgs.Y);
-                for (var y = Y - 5; y < Y + 5; y++)
-                {
-                    for (var x = X - 5; x < X + 5; x++)
-                    {
-                        NP.Set(x,y);
-                    }
-                }
-            }
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
