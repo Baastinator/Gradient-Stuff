@@ -1,15 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Xml.Schema;
-using ILGPU.IR.Types;
-using Microsoft.VisualBasic.CompilerServices;
-
 namespace Gradient_Stuff
 {
     public class NodeMap
@@ -52,6 +43,7 @@ namespace Gradient_Stuff
         {
             get
             {
+                var rng = new Random();
                 var output = new Bitmap(Size.x, Size.y);
 
                 for (var y = 0; y < Size.y; y++)
@@ -97,67 +89,66 @@ namespace Gradient_Stuff
 
         public float BicubicInterpolateBetweenNodes(Vectori pos, Vectorf interpos)
         {
-            var baseNP = new NodeMap(4, 4, -1);
+
+            int Clamp(int a, int size) => Math.Min(Math.Max(a, 0), size - 1);
 
             var points = new float[4][];
 
-            // REWRITE THE OTHER STUFF TO MAKE A MAP BY PUTTING IN VALUES, NOT WHATEVER STUPID SHIT WE USED BEFORE!!!!
-            // LOOP OVER MAP WITH SIZE SIZE * SCALAR AT 1/SCALAR DISTANCES, THEN POPULATE NODEMAP WITH THAT
-            // AAAAAAAAGHGHHRHFGHHGHGHKGJKUHJASDKLDJKJILSAHIDO
+            int[] yn = new int[4];
 
+            int[] xn = new int[4];
 
-            for (int y = 0; y < 4; y++)
+            for (int i = 0; i < 4; i++)
             {
-                points[y] = new float[4];
-                for (int x = 0; x < 4; x++)
+                xn[i] = Clamp(pos.x + i - 1, Size.x);
+                yn[i] = Clamp(pos.y + i - 1, Size.y);
+            }
+
+            for (var x = 0; x < 4; x++)
+            {
+                points[x] = new float[4];
+                for (var y = 0; y < 4; y++)
                 {
-                    points[y][x] = -1;
+                    points[x][y] = Get(xn[x], yn[y]);
                 }
             }
 
-            int xN = pos.x - 1 < 0 ? 0 : pos.x - 1;
-            int yN = pos.y - 1 < 0 ? 0 : pos.y - 1;
-
-            int xP = pos.x + 1 >= Size.x ? Size.x - 1 : pos.x + 1;
-            int yP = pos.y + 1 >= Size.y ? Size.y - 1 : pos.y + 1;
-
-            int x2P = pos.x + 2 >= Size.x ? Size.x - 1 : pos.x + 2;
-            int y2P = pos.y + 2 >= Size.y ? Size.y - 1 : pos.y + 2;
-
-            points[0][0] = Get(xN, yN);
-            points[1][0] = Get(pos.x, yN);
-            points[2][0] = Get(xP, yN);
-            points[3][0] = Get(x2P, yN);
-
-            points[0][1] = Get(xN, pos.y);
-            points[1][1] = Get(pos);
-            points[2][1] = Get(xP, pos.y);
-            points[3][1] = Get(x2P, pos.y);
-
-            points[0][2] = Get(xN, yP);
-            points[1][2] = Get(pos.x, yP);
-            points[2][2] = Get(xP, yP);
-            points[3][2] = Get(x2P, yP);
-
-            points[0][3] = Get(xN, y2P);
-            points[1][3] = Get(pos.x, y2P);
-            points[2][3] = Get(xP, y2P);
-            points[3][3] = Get(x2P, y2P);
-
-
-
-            for (int y = 0; y < 4; y++)
-            {
-                for (int x = 0; x < 4; x++)
-                {
-                    baseNP.Set(x, y, points[y][x]);
-                }
-            }
-
-            return MathB.BicubicInterpolate(points, )
+            return MathB.BicubicInterpolate(points, interpos + new Vectori(1, 1));
         }
 
+        public float BicubicInterpolateBetweenNodes(Vectorf pos) 
+            => BicubicInterpolateBetweenNodes(new Vectori((int)pos.x, (int)pos.y), new Vectorf(pos.x % 1, pos.y % 1));
 
+        public NodeMap UpscaleRangeBicubic(Vectori start, Vectori end, int scalar)
+        {
+            if (start.x >= end.x || start.y >= end.y)
+            {
+                throw new Exception("UpscaleRange too small");
+            }
+
+            Vectori size = end - start + new Vectori(1,1);
+            Vectori sSize = scalar * size;
+            NodeMap baseNP = new NodeMap(sSize);
+
+            int X = 0;
+            int Y = 0;
+            for (float y = 0; y < size.y; y += 1/(float)scalar)
+            {
+                for (float x = 0; x < size.x; x += 1/(float)scalar)
+                {
+                    baseNP.Set(X, Y, BicubicInterpolateBetweenNodes(new Vectorf(x, y)));
+                    X++;
+                }
+
+                X = 0;
+                Y++;
+            }
+
+            return baseNP;
+        }
+
+        public NodeMap UpscaleBicubic(int scalar)
+            => UpscaleRangeBicubic(new Vectori(0, 0), Size - new Vectori(1, 1), scalar);
 
         public NodeMap UpscaleBetweenNodesBilinear(Vectori pos, int scalar)
         {
@@ -219,8 +210,8 @@ namespace Gradient_Stuff
             return output;
         }
 
-        public NodeMap Upscale(int scalar)
-            => UpscaleRange(new Vectori(0, 0), Size - new Vectori(1, 1), scalar);
+        public NodeMap UpscaleBilinear(int scalar)
+            => UpscaleRangeBilinear(new Vectori(0, 0), Size - new Vectori(1, 1), scalar);
 
         public Node DownscaleBetweenNodes(Vectori pos, int divisor)
         {

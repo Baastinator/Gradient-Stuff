@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Gradient_Stuff
 {
@@ -61,6 +62,25 @@ namespace Gradient_Stuff
 
             return CubicInterpolate(cPoints, pos.x);
         }
+
+        public static Vectori defaultToPolar(Vectori size, Vectori coords, float radius)
+        {
+            var arg = coords.x*360 / size.x;
+            var abs = radius * coords.y / size.y;
+
+            return new Vectori(
+                (int) (abs * Math.Cos(arg * Math.PI / 360f)),
+                (int) (abs * Math.Sin(arg * Math.PI / 360f))
+            );
+        }
+
+        public static Vectori polarToCartesian(Vectori size, float arg, float radius)
+        {
+            return size / 2 + new Vectori(
+               (int) (radius * Math.Cos(arg * Math.PI / 180f)),
+               (int) (radius * Math.Sin(arg * Math.PI / 180f))
+            );
+        } 
 
         public static int Max(IEnumerable<int> a) 
             => a.Prepend(0).Max();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -28,31 +29,39 @@ namespace Display_BruhMoment
         
         private void button1_Click(object sender, EventArgs e) //First step
         {
-            const int size = 5;
-            NP = new NodeMap(size, size);
-            for (var y = 0; y < size; y++)
+
+            var bmp = new Bitmap($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\Laradell\\Maps\\bruh.bmp");
+            baseNP = new NodeMap(bmp.Width, bmp.Width);
+
+            for (float r = 0; r <= 1023; r += 0.5f)
             {
-                for (var x = 0; x < size; x++)
+                for (float arg = 0; arg < 360; arg += 1/ (4f * r / 128))
                 {
-                    NP.Set(x, y, 255*(float)rng.NextDouble());
+                    var coords = MathB.polarToCartesian(baseNP.Size, 230 - arg, r);
+                    var y = (int) ((r / 2048f) * baseNP.Size.y);
+                    
+                    baseNP.Set(
+                        coords,
+                        bmp.GetPixel(
+                            (int)((arg / 360f) * baseNP.Size.x),
+                            y
+                        ).R
+                    );
                 }
             }
 
-            NP = NP.Upscale(50);
+            for (int y = 0; y < baseNP.Size.y; y++)
+            {
+                for (int x = 0; x < baseNP.Size.x; x++)
+                {
+                    if (baseNP.Get(x, y) == 0)
+                    {
+                        baseNP.Set(x,y,255);
+                    }
+                }
+            }
 
-            //var bmp = new Bitmap(@"C:\Users\admin\Desktop\Laradell\DEPRECIATED Maps\BitmapBS.bmp");
-            //baseNP = new NodeMap(bmp.Width, bmp.Height);
-            //NP = new NodeMap(baseNP.Size);
-            //for (var y = 0; y < NP.Size.y; y++)
-            //{
-            //    for (var x = 0; x < NP.Size.x; x++)
-            //    {
-            //        var pxlCol = bmp.GetPixel(x, y).R;
-            //        NP.Set(x, y, pxlCol, pxlCol);
-            //    }
-            //}
-
-            //NP = NP.Downscale(8).Upscale(6);
+            NP = baseNP;
         }
 
         private void button3_Click(object sender, EventArgs e) //Next Step
@@ -61,7 +70,7 @@ namespace Display_BruhMoment
 
         private void button2_Click(object sender, EventArgs e) //Display
         {
-            pictureBox1.Image = NP.Bitmap;
+            pictureBox1.Image = NP.Downscale(2).Bitmap;
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
