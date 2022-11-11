@@ -113,7 +113,7 @@ namespace Gradient_Stuff
                 }
             }
 
-            return MathB.BicubicInterpolate(points, interpos + new Vectori(1, 1));
+            return Interpolation.BicubicInterpolate(points, interpos + new Vectori(1, 1));
         }
 
         public float BicubicInterpolateBetweenNodes(Vectorf pos) 
@@ -167,7 +167,7 @@ namespace Gradient_Stuff
             {
                 for (var x = 0f; x < 1; x += 1f / scalar)
                 {
-                    output.Set(X, Y, MathB.BilinearInterpolate(
+                    output.Set(X, Y, Interpolation.BilinearInterpolate(
                         baseNP.Get(0, 0),
                         baseNP.Get(1, 0),
                         baseNP.Get(0, 1),
@@ -212,6 +212,69 @@ namespace Gradient_Stuff
 
         public NodeMap UpscaleBilinear(int scalar)
             => UpscaleRangeBilinear(new Vectori(0, 0), Size - new Vectori(1, 1), scalar);
+
+        public NodeMap UpscaleBetweenNodesNN(Vectori pos, int scalar)
+        {
+            var output = new NodeMap(scalar, scalar);
+            var baseNP = new NodeMap(2, 2);
+            var xAdd = pos.x + 1 >= Size.x ? 0 : 1;
+            var yAdd = pos.y + 1 >= Size.y ? 0 : 1;
+            baseNP.Set(0, 0, Get(pos));
+            baseNP.Set(1, 0, Get(pos + new Vectori(xAdd, 0)));
+            baseNP.Set(0, 1, Get(pos + new Vectori(0, yAdd)));
+            baseNP.Set(1, 1, Get(pos + new Vectori(xAdd, yAdd)));
+
+            var Y = 0;
+            var X = 0;
+            for (var y = 0f; y < 1; y += 1f / scalar)
+            {
+                for (var x = 0f; x < 1; x += 1f / scalar)
+                {
+                    output.Set(X, Y, Interpolation.NN2dInterpolate(
+                        baseNP.Get(0, 0),
+                        baseNP.Get(1, 0),
+                        baseNP.Get(0, 1),
+                        baseNP.Get(1, 1),
+                        new Vectorf(x, y)
+                    ));
+
+                    X++;
+                }
+
+                X = 0;
+                Y++;
+            }
+
+            return output;
+        }
+
+        public NodeMap UpscaleRangeNN(Vectori start, Vectori end, int scalar)
+        {
+            var size = end - start + new Vectori(1, 1);
+            var output = new NodeMap(size * scalar);
+
+            for (var y = 0; y < size.y; y++)
+            {
+                for (var x = 0; x < size.x; x++)
+                {
+                    //var baseNP = UpscaleBetweenNodesBilinear(start + new Vectori(x, y), scalar);
+                    var baseNP = UpscaleBetweenNodesNN(start + new Vectori(x, y), scalar);
+
+                    for (var by = 0; by < scalar; by++)
+                    {
+                        for (var bx = 0; bx < scalar; bx++)
+                        {
+                            output.Set(new Vectori(scalar * x + bx, scalar * y + by), baseNP.Get(bx, by));
+                        }
+                    }
+                }
+            }
+
+            return output;
+        }
+
+        public NodeMap UpscaleNN(int scalar)
+            => UpscaleRangeNN(new Vectori(0, 0), Size - new Vectori(2, 2), scalar);
 
         public Node DownscaleBetweenNodes(Vectori pos, int divisor)
         {

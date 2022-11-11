@@ -56,7 +56,6 @@ namespace Gradient_Stuff
         }
 
         public int length => (int)Math.Sqrt(x * x + y * y);
-        public Vectori normalized => new Vectori(x / length, y / length);
         public string name => $"[ {x}, {y} ]";
 
         public Vectori(int x, int y)

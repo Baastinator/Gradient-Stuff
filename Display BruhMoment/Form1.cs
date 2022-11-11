@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gradient_Stuff;
+using ILGPU.IR;
 
 namespace Display_BruhMoment
 {
@@ -30,16 +31,47 @@ namespace Display_BruhMoment
         private void button1_Click(object sender, EventArgs e) //First step
         {
 
-            var bmp = new Bitmap($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\Laradell\\Maps\\bruh.bmp");
-            baseNP = new NodeMap(bmp.Width, bmp.Width);
+            //var bmp = new Bitmap($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\Laradell\\Maps\\bruh.bmp");
 
+
+            baseNP = new NodeMap(20, 20);
+            for (int y = 0; y < baseNP.Size.y; y++)
+            {
+                for (int x = 0; x < baseNP.Size.x; x++)
+                {
+                    var col = (float)(255 * rng.NextDouble());
+                    baseNP.Set(x, y, col);
+                }
+            }
+
+
+
+            NP = baseNP;
+        }
+
+        private void Rectangular(Bitmap bmp)
+        {
+            baseNP = new NodeMap(bmp.Width, bmp.Height);
+            for (int y = 0; y < baseNP.Size.y; y++)
+            {
+                for (int x = 0; x < baseNP.Size.x; x++)
+                {
+                    var col = bmp.GetPixel(x, y).R;
+                    baseNP.Set(x, y, col);
+                }
+            }
+        }
+
+        private void Polar(Bitmap bmp)
+        {
+            baseNP = new NodeMap(bmp.Width, bmp.Width);
             for (float r = 0; r <= 1023; r += 0.5f)
             {
-                for (float arg = 0; arg < 360; arg += 1/ (4f * r / 128))
+                for (float arg = 0; arg < 360; arg += 1 / (4f * r / 128))
                 {
                     var coords = MathB.polarToCartesian(baseNP.Size, 230 - arg, r);
-                    var y = (int) ((r / 2048f) * baseNP.Size.y);
-                    
+                    var y = (int)(r / 2048f * baseNP.Size.y);
+
                     baseNP.Set(
                         coords,
                         bmp.GetPixel(
@@ -56,12 +88,10 @@ namespace Display_BruhMoment
                 {
                     if (baseNP.Get(x, y) == 0)
                     {
-                        baseNP.Set(x,y,255);
+                        baseNP.Set(x, y, 255);
                     }
                 }
             }
-
-            NP = baseNP;
         }
 
         private void button3_Click(object sender, EventArgs e) //Next Step
@@ -70,7 +100,21 @@ namespace Display_BruhMoment
 
         private void button2_Click(object sender, EventArgs e) //Display
         {
-            pictureBox1.Image = NP.Downscale(2).Bitmap;
+            pictureBox1.Image =
+                VectorDisplay.drawVector(
+                    VectorDisplay.drawVector(
+                        VectorDisplay.drawVector(
+                            NP.UpscaleNN(50).Bitmap,
+                            new Vectori(50, 150),
+                            new Vectori(1, 1),
+                            50),
+                        new Vectori(150, 150),
+                        new Vectori(1, 2),
+                        50),
+                    new Vectori(250, 150),
+                    new Vectori(1, -1),
+                    50
+                );
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
