@@ -4,20 +4,9 @@ namespace Gradient_Stuff
 {
     public class Vectorf
     {
-        private float _x;
-        private float _y;
+        public float x { get; set; }
 
-        public float x
-        {
-            get => _x;
-            set => _x = value;
-        }
-
-        public float y
-        {
-            get => _y;
-            set => _y = value;
-        }
+        public float y { get; set; }
 
         public float length => (float)Math.Sqrt(x * x + y * y);
         public Vectorf normalized => new Vectorf(x / length, y / length);
@@ -33,27 +22,21 @@ namespace Gradient_Stuff
         public static Vectorf operator -(Vectorf a, Vectorf b) => new Vectorf(a.x - b.x, a.y - b.y);
         public static float operator *(Vectorf a, Vectorf b) => a.x * b.x + a.y * b.y;
         public static Vectorf operator *(Vectorf a, float s) => new Vectorf(a.x * s, a.y * s);
+        public static Vectorf operator *(float s, Vectorf a) => new Vectorf(a.x * s, a.y * s);
         public static Vectorf operator /(Vectorf a, float d) => new Vectorf(a.x / d, a.y / d);
         public static float CrossProduct(Vectorf a, Vectorf b) => a.x * b.y - a.y * b.x;
+        public static explicit operator Vectori(Vectorf a)
+        {
+            return new Vectori((int)a.x, (int)a.y);
+        }
 
         public Vectori Vectori => new Vectori((int)x, (int)y);
     }
     public class Vectori
     {
-        private int _x;
-        private int _y;
+        public int x { get; set; }
 
-        public int x
-        {
-            get => _x;
-            set => _x = value;
-        }
-
-        public int y
-        {
-            get => _y;
-            set => _y = value;
-        }
+        public int y { get; set; }
 
         public int length => (int)Math.Sqrt(x * x + y * y);
         public string name => $"[ {x}, {y} ]";
@@ -74,6 +57,11 @@ namespace Gradient_Stuff
         public static Vectorf operator +(Vectorf a, Vectori b) => new Vectorf(a.x + b.x, a.y + b.y);
         public static Vectorf operator -(Vectori a, Vectorf b) => new Vectorf(a.x - b.x, a.y - b.y);
         public static Vectorf operator -(Vectorf a, Vectori b) => new Vectorf(a.x - b.x, a.y - b.y);
+
+        public static implicit operator Vectorf(Vectori a)
+        {
+            return new Vectorf(a.x, a.y);
+        }
         public static int CrossProduct(Vectori a, Vectori b) => a.x * b.y - a.y * b.x;
 
         public Vectorf Vectorf => new Vectorf(x, y);

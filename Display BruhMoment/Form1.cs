@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gradient_Stuff;
-using ILGPU.IR;
 
 namespace Display_BruhMoment
 {
@@ -19,9 +10,9 @@ namespace Display_BruhMoment
         private static NodeMap NP;
         private static NodeMap baseNP;
 
-        private static Random rng = new Random();
+        private static readonly Random rng = new Random();
 
-        private static int step = 1;
+        private static readonly Noise noise = new Noise(1, 0.001, 1, 1, rng.Next(1, 10000000));
 
         public Form1()
         {
@@ -32,19 +23,25 @@ namespace Display_BruhMoment
         {
 
             //var bmp = new Bitmap($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\Laradell\\Maps\\bruh.bmp");
+            var seed = rng.Next(1, 1000000000);
 
+            int size = 39;
 
-            baseNP = new NodeMap(20, 20);
+            baseNP = new NodeMap(size, size);
             for (int y = 0; y < baseNP.Size.y; y++)
             {
                 for (int x = 0; x < baseNP.Size.x; x++)
                 {
-                    var col = (float)(255 * rng.NextDouble());
-                    baseNP.Set(x, y, col);
+                    //var col = (float)((noise.Smooth2D(x, y, seed)+1) * 255f / 2f);
+                    //Console.WriteLine($"{x}; {y} - {col}");
+                    int X = x - size/2;
+                    int Y = y - size/2;
+                    var col = 255 * Math.Exp(-(X * X + Y * Y) / (10d * size)) -
+                              200 * Math.Exp(-(5 * X * X + Y * Y) / (10d * size));
+                    baseNP.Set(x, y, (float)col);
                 }
             }
-
-
+            Console.WriteLine("");
 
             NP = baseNP;
         }
@@ -100,21 +97,33 @@ namespace Display_BruhMoment
 
         private void button2_Click(object sender, EventArgs e) //Display
         {
-            pictureBox1.Image =
-                VectorDisplay.drawVector(
-                    VectorDisplay.drawVector(
-                        VectorDisplay.drawVector(
-                            NP.UpscaleNN(50).Bitmap,
-                            new Vectori(50, 150),
-                            new Vectori(1, 1),
-                            50),
-                        new Vectori(150, 150),
-                        new Vectori(1, 2),
-                        50),
-                    new Vectori(250, 150),
-                    new Vectori(1, -1),
-                    50
-                );
+            int size = 25;
+
+            var bmp = NP.UpscaleNN(size).Bitmap;
+
+            for (int y = 0; y < NP.Size.y - 2; y++)
+            {
+                for (int x = 0; x < NP.Size.x - 2; x++)
+                {
+                    var grad = Gradient.GetGradient(NP, new Vectori(x + 1, y + 1));
+
+                    if (Math.Abs(grad.x) > 10000000 || Math.Abs(grad.y) > 10000000)
+                    {
+                        Console.WriteLine("please why do you do this");
+                    }
+
+                    Console.WriteLine($"{grad.x}; {grad.y}\nPos: {x} {y}\n");
+
+                    bmp = VectorDisplay.drawVector(
+                        bmp,
+                        new Vectori(size * (x + 1), size * (y + 1)),
+                        grad,
+                        size)
+                    ;
+                }
+            }
+
+            pictureBox1.Image = bmp;
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)

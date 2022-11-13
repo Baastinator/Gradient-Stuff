@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 namespace Gradient_Stuff
 {
@@ -43,7 +42,6 @@ namespace Gradient_Stuff
         {
             get
             {
-                var rng = new Random();
                 var output = new Bitmap(Size.x, Size.y);
 
                 for (var y = 0; y < Size.y; y++)
@@ -90,7 +88,7 @@ namespace Gradient_Stuff
         public float BicubicInterpolateBetweenNodes(Vectori pos, Vectorf interpos)
         {
 
-            int Clamp(int a, int size) => Math.Min(Math.Max(a, 0), size - 1);
+            static int Clamp(int a, int size) => Math.Min(Math.Max(a, 0), size - 1);
 
             var points = new float[4][];
 
@@ -278,8 +276,6 @@ namespace Gradient_Stuff
 
         public Node DownscaleBetweenNodes(Vectori pos, int divisor)
         {
-            Node node;
-
             var sum = 0.0f;
             var oSum = 0.0f;
 
@@ -292,7 +288,7 @@ namespace Gradient_Stuff
                 }
             }
 
-            node = new Node { Height = sum / (divisor * divisor), OHeight = oSum / (divisor * divisor) };
+            var node = new Node { Height = sum / (divisor * divisor), OHeight = oSum / (divisor * divisor) };
 
             return node;
         }

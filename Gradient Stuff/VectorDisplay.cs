@@ -1,24 +1,74 @@
-﻿using System;
+﻿using ILGPU;
+using System;
 using System.Drawing;
+using System.Numerics;
 
 namespace Gradient_Stuff
 {
     public static class VectorDisplay
     {
-        public static Bitmap drawVector(Bitmap bmp, Vectori pos, Vectori dir, int mapScalar)
+        public static Bitmap drawVector(Bitmap bmp, Vectori pos, Vectorf dir, int mapScalar)
         {
-            var nDir = new Vectori(
-                (int) (mapScalar * dir.x / (float) Math.Sqrt(dir.x * dir.x + dir.y * dir.y)),
-                (int) (mapScalar * dir.y / (float) Math.Sqrt(dir.x * dir.x + dir.y * dir.y))
-            );
+            using var graphics = Graphics.FromImage(bmp);
+            if (dir.x != 0 && dir.y != 0)
+            {
+                Vectori nDir = new Vectori(0,0);
 
-            var nDir1 = new Vectori(
-                dir.x == 0 ? 0 : dir.x / Math.Abs(dir.x),
-                dir.y == 0 ? 0 : dir.y / Math.Abs(dir.y)
-            );
+                if (Math.Abs(dir.x) < 0.01f || Math.Abs(dir.y) < 0.01f)
+                {
+                    while (Math.Abs(dir.x) < 0.01f || Math.Abs(dir.y) < 0.01f)
+                    {
+                        dir.x *= 10;
+                        dir.y *= 10;
+                    }
+                }
+                
+                var a = new Vector2(
+                    dir.x,
+                    dir.y
+                );
 
-            
+                a = Vector2.Normalize(a);
 
+                var b = mapScalar / 2f * new Vectorf(a.X, a.Y);
+
+                nDir.x = (int)b.x;
+                nDir.y = (int)b.y;
+                
+                if (Math.Abs(nDir.x + 100) > 10000000 || Math.Abs(nDir.y + 100) > 10000000)
+                {
+                    Console.WriteLine("Bruh");
+                }
+
+                graphics.DrawLine(new Pen(Brushes.Red, 3),
+                    pos.x,
+                    pos.y,
+                    pos.x + nDir.x,
+                    pos.y + nDir.y
+                );
+                return bmp;
+            }
+            else if (dir.x == 0)
+            {
+                graphics.DrawLine(new Pen(Brushes.Red, 3),
+                    pos.x,
+                    pos.y,
+                    pos.x,
+                    pos.y + Math.Sign(dir.y) * mapScalar / 2
+                );
+            }
+            else
+            {
+                graphics.DrawLine(new Pen(Brushes.Red, 3),
+                    pos.x,
+                    pos.y,
+                    pos.x + Math.Sign(dir.x) * mapScalar / 2,
+                    pos.y
+                );
+            }
+
+            graphics.DrawLine(new Pen(Brushes.Red,3),
+                pos.x-1, pos.y, pos.x+1, pos.y);
             return bmp;
         }
 
@@ -26,7 +76,7 @@ namespace Gradient_Stuff
         {
             Vectori end = pos + direction;
 
-            int minX = (int)Math.Min(pos.x, end.x);
+            int minX = Math.Min(pos.x, end.x);
             int maxX, minY, maxY;
             if (minX == pos.x)
             {
