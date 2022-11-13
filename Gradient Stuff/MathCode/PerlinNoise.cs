@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Gradient_Stuff
+namespace Gradient_Stuff.MathCode
 {
     public class Noise
     {
@@ -63,23 +63,23 @@ namespace Gradient_Stuff
         // The big numbers are prime numbers and can be changed to other primes
         public double PerlinNoise1D(int x, int seed)
         {
-            int n = (x * WorldGenConst.NOISE_MAGIC_X + WorldGenConst.NOISE_MAGIC_SEED * seed) & 0x7fffffff;
-            n = (n << 13) ^ n;
-            return (1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+            int n = x * WorldGenConst.NOISE_MAGIC_X + WorldGenConst.NOISE_MAGIC_SEED * seed & 0x7fffffff;
+            n = n << 13 ^ n;
+            return 1.0 - (n * (n * n * 15731 + 789221) + 1376312589 & 0x7fffffff) / 1073741824.0;
         }
 
         public double PerlinNoise2D(int x, int y, int seed)
         {
-            int n = (x * WorldGenConst.NOISE_MAGIC_X + y * WorldGenConst.NOISE_MAGIC_Y * WorldGenConst.NOISE_MAGIC_SEED * seed) & 0x7fffffff;
-            n = (n << 13) ^ n;
-            return (1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+            int n = x * WorldGenConst.NOISE_MAGIC_X + y * WorldGenConst.NOISE_MAGIC_Y * WorldGenConst.NOISE_MAGIC_SEED * seed & 0x7fffffff;
+            n = n << 13 ^ n;
+            return 1.0 - (n * (n * n * 15731 + 789221) + 1376312589 & 0x7fffffff) / 1073741824.0;
         }
 
         public double PerlinNoise3D(int x, int y, int z, int seed)
         {
-            int n = (x * WorldGenConst.NOISE_MAGIC_X + y * WorldGenConst.NOISE_MAGIC_Y + z * WorldGenConst.NOISE_MAGIC_Z * WorldGenConst.NOISE_MAGIC_SEED * seed) & 0x7fffffff;
-            n = (n << 13) ^ n;
-            return (1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+            int n = x * WorldGenConst.NOISE_MAGIC_X + y * WorldGenConst.NOISE_MAGIC_Y + z * WorldGenConst.NOISE_MAGIC_Z * WorldGenConst.NOISE_MAGIC_SEED * seed & 0x7fffffff;
+            n = n << 13 ^ n;
+            return 1.0 - (n * (n * n * 15731 + 789221) + 1376312589 & 0x7fffffff) / 1073741824.0;
         }
 
         /// ************** \\\
@@ -99,16 +99,16 @@ namespace Gradient_Stuff
         {
             double total = 0;
             total += PerlinNoise2D(x, y, seed) * (w - x) * (h - y);
-            total += PerlinNoise2D(x - w, y, seed) * (x) * (h - y);
-            total += PerlinNoise2D(x - w, y - h, seed) * (x) * (y);
-            total += PerlinNoise2D(x, y - h, seed) * (w - x) * (y);
+            total += PerlinNoise2D(x - w, y, seed) * x * (h - y);
+            total += PerlinNoise2D(x - w, y - h, seed) * x * y;
+            total += PerlinNoise2D(x, y - h, seed) * (w - x) * y;
             return total / (w * h);
         }
 
         // Make noise seamless in just the X direction, wrapping at w
         public double NoiseSeamlessX2D(int x, int y, int seed, int w)
         {
-            return ((w - x) * PerlinNoise2D(x, y, seed) + (x) * PerlinNoise2D(x - w, y, seed)) / w;
+            return ((w - x) * PerlinNoise2D(x, y, seed) + x * PerlinNoise2D(x - w, y, seed)) / w;
         }
 
         /// ******** \\\
@@ -118,8 +118,8 @@ namespace Gradient_Stuff
         public double Gradient2D(double x, double y, int seed)
         {
             // Calculate integer coordinates
-            int integerX = (x > 0.0 ? (int)x : (int)x - 1);
-            int integerY = (y > 0.0 ? (int)y : (int)y - 1);
+            int integerX = x > 0.0 ? (int)x : (int)x - 1;
+            int integerY = y > 0.0 ? (int)y : (int)y - 1;
             // Calculate remainder of coordinates
             double fractionalX = x - integerX;
             double fractionalY = y - integerY;
@@ -138,9 +138,9 @@ namespace Gradient_Stuff
         public double Gradient3D(double x, double y, double z, int seed)
         {
             // Calculate integer coordinates
-            int integerX = (x > 0.0 ? (int)x : (int)x - 1);
-            int integerY = (y > 0.0 ? (int)y : (int)y - 1);
-            int integerZ = (z > 0.0 ? (int)z : (int)z - 1);
+            int integerX = x > 0.0 ? (int)x : (int)x - 1;
+            int integerY = y > 0.0 ? (int)y : (int)y - 1;
+            int integerZ = z > 0.0 ? (int)z : (int)z - 1;
             // Calculate remainder of coordinates
             double fractionalX = x - integerX;
             double fractionalY = y - integerY;
@@ -192,8 +192,8 @@ namespace Gradient_Stuff
         // v0 = point before a, v3 = point after b
         public double InterpolateCubic(double v0, double v1, double v2, double v3, float x)
         {
-            double p = (v3 - v2) - (v0 - v1);
-            double q = (v0 - v1) - p;
+            double p = v3 - v2 - (v0 - v1);
+            double q = v0 - v1 - p;
             double r = v2 - v0;
             double s = v1;
             return p * x * x * x + q * x * x + r * x + s;

@@ -3,7 +3,7 @@ using System;
 using System.Drawing;
 using System.Numerics;
 
-namespace Gradient_Stuff
+namespace Gradient_Stuff.Vector
 {
     public static class VectorDisplay
     {
@@ -12,7 +12,7 @@ namespace Gradient_Stuff
             using var graphics = Graphics.FromImage(bmp);
             if (dir.x != 0 && dir.y != 0)
             {
-                Vectori nDir = new Vectori(0,0);
+                Vectori nDir = new Vectori(0, 0);
 
                 if (Math.Abs(dir.x) < 0.01f || Math.Abs(dir.y) < 0.01f)
                 {
@@ -22,7 +22,7 @@ namespace Gradient_Stuff
                         dir.y *= 10;
                     }
                 }
-                
+
                 var a = new Vector2(
                     dir.x,
                     dir.y
@@ -34,11 +34,6 @@ namespace Gradient_Stuff
 
                 nDir.x = (int)b.x;
                 nDir.y = (int)b.y;
-                
-                if (Math.Abs(nDir.x + 100) > 10000000 || Math.Abs(nDir.y + 100) > 10000000)
-                {
-                    Console.WriteLine("Bruh");
-                }
 
                 graphics.DrawLine(new Pen(Brushes.Red, 3),
                     pos.x,
@@ -67,8 +62,8 @@ namespace Gradient_Stuff
                 );
             }
 
-            graphics.DrawLine(new Pen(Brushes.Red,3),
-                pos.x-1, pos.y, pos.x+1, pos.y);
+            graphics.DrawLine(new Pen(Brushes.Red, 3),
+                pos.x - 1, pos.y, pos.x + 1, pos.y);
             return bmp;
         }
 
@@ -103,7 +98,7 @@ namespace Gradient_Stuff
                     bmp.SetPixel(x, (int)Math.Floor(y + 0.5), Color.FromArgb(255, 0, 0));
                     y += dy;
                 }
-            }   
+            }
             else
             {
                 float x = minX;

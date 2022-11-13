@@ -1,6 +1,7 @@
 ﻿using System;
+using Gradient_Stuff.Vector;
 
-namespace Gradient_Stuff
+namespace Gradient_Stuff.MathCode
 {
     public class Gradient
     {
@@ -11,13 +12,12 @@ namespace Gradient_Stuff
             var R = pos.x > NP.Size.x ? NP.Get(pos) : NP.Get(pos.x + 1, pos.y);
             var D = pos.y > NP.Size.x ? NP.Get(pos) : NP.Get(pos.x, pos.y + 1);
             var s = NP.Get(pos);
-                
-            Console.WriteLine($"X: {L} {s} {R}\nY: {U} {s} {D}");
 
-            var X = ((R - s) + (s - L)) ;
-            var Y = ((D - s) + (s - U)) ;
+
+            var X = R - s + (s - L);
+            var Y = D - s + (s - U);
 
             return new Vectorf(X, Y);
         }
     }
-}   
+}

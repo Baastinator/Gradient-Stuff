@@ -1,6 +1,7 @@
 ﻿using System;
+using Gradient_Stuff.Vector;
 
-namespace Gradient_Stuff
+namespace Gradient_Stuff.MathCode
 {
     public static class Interpolation
     {
@@ -15,7 +16,7 @@ namespace Gradient_Stuff
         {
             var ab = NN1dInterpolate(a, b, pos.x);
             var cd = NN1dInterpolate(c, d, pos.x);
-            
+
             return NN1dInterpolate(ab, cd, pos.y);
         }
         public static float LinearInterpolate(float start, float end, float position)

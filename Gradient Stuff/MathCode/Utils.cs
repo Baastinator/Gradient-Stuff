@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Gradient_Stuff.Vector;
 
-namespace Gradient_Stuff
+namespace Gradient_Stuff.MathCode
 {
-    public static class MathB
+    public static class Utils
     {
 
         public static float Round(float n, int digits) 

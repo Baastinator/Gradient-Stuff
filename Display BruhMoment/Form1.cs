@@ -2,6 +2,8 @@
 using System.Drawing;
 using System.Windows.Forms;
 using Gradient_Stuff;
+using Gradient_Stuff.MathCode;
+using Gradient_Stuff.Vector;
 
 namespace Display_BruhMoment
 {
@@ -33,7 +35,6 @@ namespace Display_BruhMoment
                 for (int x = 0; x < baseNP.Size.x; x++)
                 {
                     //var col = (float)((noise.Smooth2D(x, y, seed)+1) * 255f / 2f);
-                    //Console.WriteLine($"{x}; {y} - {col}");
                     int X = x - size/2;
                     int Y = y - size/2;
                     var col = 255 * Math.Exp(-(X * X + Y * Y) / (10d * size)) -
@@ -41,7 +42,6 @@ namespace Display_BruhMoment
                     baseNP.Set(x, y, (float)col);
                 }
             }
-            Console.WriteLine("");
 
             NP = baseNP;
         }
@@ -66,7 +66,7 @@ namespace Display_BruhMoment
             {
                 for (float arg = 0; arg < 360; arg += 1 / (4f * r / 128))
                 {
-                    var coords = MathB.polarToCartesian(baseNP.Size, 230 - arg, r);
+                    var coords = Utils.polarToCartesian(baseNP.Size, 230 - arg, r);
                     var y = (int)(r / 2048f * baseNP.Size.y);
 
                     baseNP.Set(
@@ -106,14 +106,6 @@ namespace Display_BruhMoment
                 for (int x = 0; x < NP.Size.x - 2; x++)
                 {
                     var grad = Gradient.GetGradient(NP, new Vectori(x + 1, y + 1));
-
-                    if (Math.Abs(grad.x) > 10000000 || Math.Abs(grad.y) > 10000000)
-                    {
-                        Console.WriteLine("please why do you do this");
-                    }
-
-                    Console.WriteLine($"{grad.x}; {grad.y}\nPos: {x} {y}\n");
-
                     bmp = VectorDisplay.drawVector(
                         bmp,
                         new Vectori(size * (x + 1), size * (y + 1)),

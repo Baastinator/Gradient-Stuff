@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Drawing;
+using Gradient_Stuff.MathCode;
+using Gradient_Stuff.Vector;
+
 namespace Gradient_Stuff
 {
     public class NodeMap
@@ -48,7 +51,7 @@ namespace Gradient_Stuff
                 {
                     for (var x = 0; x < Size.x; x++)
                     {
-                        var col = (int)MathB.Round(Get(x, y), 0);
+                        var col = (int)Utils.Round(Get(x, y), 0);
                         output.SetPixel(x, y, Color.FromArgb(255, col, col, col));
                     }
                 }
@@ -329,7 +332,7 @@ namespace Gradient_Stuff
                     maxes[x] = maxes[x] == 0 ? 1 : maxes[x];
                     for (var y = 0; y < Size.y; y++)
                     {
-                        maxes[x] = Math.Max(maxes[x], MathB.Round(Get(x, y), roundLength).ToString().Length);
+                        maxes[x] = Math.Max(maxes[x], Utils.Round(Get(x, y), roundLength).ToString().Length);
                     }
                 }
 
@@ -339,7 +342,7 @@ namespace Gradient_Stuff
                     for (var x = 0; x < Size.x; x++)
                     {
                         a += Strings.AddWhitespace(
-                            MathB.Round(Get(x, y), roundLength)
+                            Utils.Round(Get(x, y), roundLength)
                                 .ToString()
                             , maxes[x] - 1
                         ) + (!(x == Size.x - 1 && y == Size.y - 1) ? "  " : "");
