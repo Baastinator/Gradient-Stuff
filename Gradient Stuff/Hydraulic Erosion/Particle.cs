@@ -9,6 +9,7 @@ namespace Gradient_Stuff.Hydraulic_Erosion
         public float WaterMass { get; set; }
         public float SedimentMass { get; set; }
         public float Mass => WaterMass + SedimentMass;
-
+        public float SedimentPercentage => SedimentMass / (SedimentMass + WaterMass);
+        public Vectorf Momentum => Velocity * Mass;
     }
 }

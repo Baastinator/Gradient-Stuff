@@ -27,11 +27,7 @@ namespace Gradient_Stuff.Vector
         public static Vectorf operator +(Vectorf a, Vectori b) => new Vectorf(a.x + b.x, a.y + b.y);
         public static Vectorf operator -(Vectori a, Vectorf b) => new Vectorf(a.x - b.x, a.y - b.y);
         public static Vectorf operator -(Vectorf a, Vectori b) => new Vectorf(a.x - b.x, a.y - b.y);
-
-        public static implicit operator Vectorf(Vectori a)
-        {
-            return new Vectorf(a.x, a.y);
-        }
+        public static implicit operator Vectorf(Vectori a) => new Vectorf(a.x, a.y);
         public static int CrossProduct(Vectori a, Vectori b) => a.x * b.y - a.y * b.x;
 
         public Vectorf Vectorf => new Vectorf(x, y);

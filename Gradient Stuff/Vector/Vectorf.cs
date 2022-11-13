@@ -24,10 +24,8 @@ namespace Gradient_Stuff.Vector
         public static Vectorf operator *(Vectorf a, float s) => new Vectorf(a.x * s, a.y * s);
         public static Vectorf operator *(float s, Vectorf a) => new Vectorf(a.x * s, a.y * s);
         public static Vectorf operator /(Vectorf a, float d) => new Vectorf(a.x / d, a.y / d);
+        public static Vectorf operator /(float d, Vectorf a) => new Vectorf(d / a.x, d / a.y);
+        public static explicit operator Vectori(Vectorf a) => new Vectori((int)a.x, (int)a.y);
         public static float CrossProduct(Vectorf a, Vectorf b) => a.x * b.y - a.y * b.x;
-        public static explicit operator Vectori(Vectorf a)
-        {
-            return new Vectori((int)a.x, (int)a.y);
-        }
     }
 }
