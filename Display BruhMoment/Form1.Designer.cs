@@ -33,6 +33,8 @@ namespace Display_BruhMoment
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
+            this.showVectors = new System.Windows.Forms.CheckBox();
+            this.ShowSteps = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -77,12 +79,35 @@ namespace Display_BruhMoment
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
+            // showVectors
+            // 
+            this.showVectors.AutoSize = true;
+            this.showVectors.Location = new System.Drawing.Point(12, 42);
+            this.showVectors.Name = "showVectors";
+            this.showVectors.Size = new System.Drawing.Size(64, 19);
+            this.showVectors.TabIndex = 4;
+            this.showVectors.Text = "vectors";
+            this.showVectors.UseVisualStyleBackColor = true;
+            this.showVectors.CheckedChanged += new System.EventHandler(this.showVectors_CheckedChanged);
+            // 
+            // ShowSteps
+            // 
+            this.ShowSteps.AutoSize = true;
+            this.ShowSteps.Location = new System.Drawing.Point(12, 68);
+            this.ShowSteps.Name = "ShowSteps";
+            this.ShowSteps.Size = new System.Drawing.Size(53, 19);
+            this.ShowSteps.TabIndex = 5;
+            this.ShowSteps.Text = "steps";
+            this.ShowSteps.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(1384, 640);
+            this.Controls.Add(this.ShowSteps);
+            this.Controls.Add(this.showVectors);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -93,6 +118,7 @@ namespace Display_BruhMoment
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -102,6 +128,8 @@ namespace Display_BruhMoment
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.CheckBox showVectors;
+        private System.Windows.Forms.CheckBox ShowSteps;
     }
 }
 

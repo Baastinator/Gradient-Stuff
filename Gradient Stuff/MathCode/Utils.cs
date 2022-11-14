@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Gradient_Stuff.Vector;
 
@@ -32,5 +33,32 @@ namespace Gradient_Stuff.MathCode
 
         public static int Max(IEnumerable<int> a) 
             => a.Prepend(0).Max();
+
+        public static void DrawCircle(this Graphics g, Pen pen,
+            float centerX, float centerY, float radius)
+        {
+            g.DrawEllipse(pen, centerX - radius, centerY - radius,
+                radius + radius, radius + radius);
+        }
+
+        public static void FillCircle(this Graphics g, Brush brush,
+            float centerX, float centerY, float radius)
+        {
+            g.FillEllipse(brush, centerX - radius, centerY - radius,
+                radius + radius, radius + radius);
+        }
+
+        public static string AddWhitespace(string input, int totalSize, char Filler = ' ')
+        {
+            //if (input.Length > totalSize) throw new Exception("add whitespace: yo wtf you tryna do");
+            var WS = "";
+            var delta = totalSize - input.Length;
+            for (var i = 0; i <= delta; i++)
+            {
+                WS += Filler;
+            }
+
+            return input + WS;
+        }
     }
 }

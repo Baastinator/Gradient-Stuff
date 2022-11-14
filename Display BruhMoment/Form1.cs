@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Gradient_Stuff;
+using Gradient_Stuff.Hydraulic_Erosion;
 using Gradient_Stuff.MathCode;
 using Gradient_Stuff.Vector;
 
@@ -11,6 +13,8 @@ namespace Display_BruhMoment
     {
         private static NodeMap NP;
         private static NodeMap baseNP;
+
+        private static List<Particle> waterList = new List<Particle>();
 
         private static readonly Random rng = new Random();
 
@@ -27,7 +31,7 @@ namespace Display_BruhMoment
             //var bmp = new Bitmap($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\\Laradell\\Maps\\bruh.bmp");
             var seed = rng.Next(1, 1000000000);
 
-            int size = 39;
+            int size = 9;
 
             baseNP = new NodeMap(size, size);
             for (int y = 0; y < baseNP.Size.y; y++)
@@ -35,10 +39,17 @@ namespace Display_BruhMoment
                 for (int x = 0; x < baseNP.Size.x; x++)
                 {
                     //var col = (float)((noise.Smooth2D(x, y, seed)+1) * 255f / 2f);
-                    int X = x - size/2;
-                    int Y = y - size/2;
-                    var col = 255 * Math.Exp(-(X * X + Y * Y) / (10d * size)) -
-                              200 * Math.Exp(-(5 * X * X + Y * Y) / (10d * size));
+                    
+                    float X = (x - size / 2f) / 5f;
+
+                    float Y = (y - size / 2f) / 5f;
+
+                    var col = 255 * (
+                        Math.Exp(-(X * X + Y * Y)) -
+                        Math.Exp(-(X * X + 3 * Y * Y)) -
+                        Math.Exp(-(X * X + Y * Y) / 3d) / 2d + 1
+                    );
+
                     baseNP.Set(x, y, (float)col);
                 }
             }
@@ -93,37 +104,52 @@ namespace Display_BruhMoment
 
         private void button3_Click(object sender, EventArgs e) //Next Step
         {
+
         }
 
         private void button2_Click(object sender, EventArgs e) //Display
         {
-            int size = 25;
 
-            var bmp = NP.UpscaleNN(size).Bitmap;
 
-            for (int y = 0; y < NP.Size.y - 2; y++)
+            int vecSize = 25;
+
+            NP = NP.UpscaleBicubic(100);
+
+            var bmp = NP.Bitmap;
+
+            if (showVectors.Checked)
             {
-                for (int x = 0; x < NP.Size.x - 2; x++)
+                for (int y = 0; y < NP.Size.y - 2; y++)
                 {
-                    var grad = Gradient.GetGradient(NP, new Vectori(x + 1, y + 1));
-                    bmp = VectorDisplay.drawVector(
-                        bmp,
-                        new Vectori(size * (x + 1), size * (y + 1)),
-                        grad,
-                        size)
-                    ;
+                    for (int x = 0; x < NP.Size.x - 2; x++)
+                    {
+                        if (x % vecSize == 0 && y % vecSize == 0)
+                        {
+                            var grad = NP.GetGradient(new Vectori(x + 1, y + 1));
+                            bmp = bmp.drawVector(
+                                new Vectori(x, y),
+                                -grad,
+                                vecSize
+                            );
+                        }
+                    }
                 }
             }
 
             pictureBox1.Image = bmp;
         }
-
+ 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
 
         }
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void showVectors_CheckedChanged(object sender, EventArgs e)
         {
 
         }
